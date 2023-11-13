@@ -1,6 +1,7 @@
+
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorGridFSBucket
 
-uri = "mongodb+srv://admin:admin123@challenge-million-up.khx0rsj.mongodb.net/?retryWrites=true&w=majority"
+uri = "mongodb+srv://admin:admin123@challenge-million-up.khx0rsj.mongodb.net/?retryWrites=true&w=majority" # noqa
 
 client = AsyncIOMotorClient(uri)
 
