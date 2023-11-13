@@ -35,6 +35,14 @@ create_generic_routes(
 
 @router_property.put('price/{item_id}')
 async def update_only_price(item_id: str, updated_item: Property_price):
+    """
+    Update the price of a property.
+
+    :param item_id: The ID of the property to be updated.
+    :param updated_item: The updated price information.
+
+    :return: The updated property with the new price.
+    """
     item_dict = updated_item.model_dump(exclude_unset=True)
     print(item_dict)
     if "price" not in item_dict:
@@ -80,7 +88,13 @@ router_property_image = APIRouter(
 
 @router_property_image.post("/uploadfile/")
 async def create_upload_file(file: UploadFile = File(...)):
+    """
+    Upload a property image file.
 
+    :param file: The image file to be uploaded.
+
+    :return: Information about the uploaded file.
+    """
     contents = await file.read()
 
     file_id = await fs.upload_from_stream(
@@ -94,6 +108,13 @@ async def create_upload_file(file: UploadFile = File(...)):
 
 @router_property_image.get("/file/{file_id}")
 async def read_file(file_id: str):
+    """
+    Read a property image file.
+
+    :param file_id: The ID of the file to be retrieved.
+
+    :return: The property image file as a streaming response.
+    """
     try:
         object_id = ObjectId(file_id)
         stream = await fs.open_download_stream(object_id)
