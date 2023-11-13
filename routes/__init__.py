@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, status, Query
 from typing import Type, Callable
 from pymongo.collection import Collection
 from pydantic import BaseModel
@@ -37,7 +37,7 @@ def create_generic_routes(
         items_serialized = list_serial(items_cursor)
         return items_serialized
 
-    #GET by id
+    # GET by id
     @router.get('/{item_id}')
     async def read_item(item_id: str):
         item = await collection.find_one({"_id": ObjectId(item_id)})
@@ -47,6 +47,7 @@ def create_generic_routes(
 
         item_serialized = serializer(item)
         return item_serialized
+
     # Update
     @router.put('/{item_id}')
     async def update_item(item_id: str, updated_item: model):
@@ -62,3 +63,28 @@ def create_generic_routes(
     async def delete_item(item_id: str):
         collection.find_one_and_delete({"_id": ObjectId(item_id)})
         return HTTPException(status_code=200, detail="delete ")
+
+    # search
+    @router.post('/search', response_model=list[model])
+    async def search_items(
+        query_params: model,
+        skip: int = Query(0, ge=0),
+        limit: int = Query(10, le=100)
+    ):
+        non_null_fields = {key: value for key, value in query_params.model_dump().items() if value is not None} # noqa
+        if len(non_null_fields) == 1:
+            field_name, field_value = non_null_fields.popitem()
+            query_dict = {field_name: field_value}
+        else:
+            raise HTTPException(
+                status_code=400,
+                detail="Exactly one non-null field is required for search."
+            )
+
+        items_cursor = await (
+            collection
+            .find(query_dict)
+            .skip(skip)
+            .limit(limit).to_list(None))
+        items_serialized = list_serial(items_cursor)
+        return items_serialized

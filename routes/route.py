@@ -1,25 +1,27 @@
-from config.database import (
-    collection_owner,
-    collection_property,
-    collection_property_image,
-    collection_property_trace,
-    fs
-)
 import io
-from fastapi import APIRouter, HTTPException, status, UploadFile, File
+
+from bson import ObjectId
+from config.database import (collection_owner, collection_property,
+                             collection_property_image,
+                             collection_property_trace, fs)
+from fastapi import APIRouter, File, HTTPException, UploadFile, status
 from fastapi.responses import StreamingResponse
+from gridfs import NoFile
 from models.owner import Owner
 from models.property import Property, Property_price
 from models.propertyimage import PropertyImage
 from models.propertytrace import PropertyTrace
-from schema.owner import list_owner, individual_Serial as serial_owner
-from schema.property import list_property, individual_Serial as serial_property
-from schema.property_image import list_property_image, individual_Serial as serial_property_image
-from schema.property_trace import list_property_trace, individual_Serial as serial_property_trace
-from bson import ObjectId
+from schema.owner import individual_Serial as serial_owner
+from schema.owner import list_owner
+from schema.property import individual_Serial as serial_property
+from schema.property import list_property
+from schema.property_image import individual_Serial as serial_property_image
+from schema.property_image import list_property_image
+from schema.property_trace import individual_Serial as serial_property_trace
+from schema.property_trace import list_property_trace
+
 from routes import create_generic_routes
-from gridfs.errors import NoFile
-from config.database import db
+
 # Property routes
 router_property = APIRouter(prefix="/property", tags=["Property"])
 create_generic_routes(
@@ -48,7 +50,13 @@ async def update_only_price(item_id: str, updated_item: Property_price):
     return updated_item
 # Owner routes
 router_owner = APIRouter(prefix="/owner", tags=["Owner"])
-create_generic_routes(router_owner, Owner, collection_owner, list_owner, serial_owner)
+create_generic_routes(
+    router_owner,
+    Owner,
+    collection_owner,
+    list_owner,
+    serial_owner
+)
 
 # PropertyTrace routes
 router_property_trace = APIRouter(
@@ -68,22 +76,6 @@ router_property_image = APIRouter(
     prefix="/property_image",
     tags=["Property Image"]
 )
-# @router_property_image.post(
-#             '/property_images',
-#             response_model=PropertyImage,
-#             status_code=status.HTTP_201_CREATED
-#     )
-# async def create_item(item: PropertyImage):
-#     try:
-#         item_dict = item.model_dump()
-#         inserted_result = await collection_property_image.insert_one(item_dict)
-#         inserted_item = await collection_property_image.find_one(
-#             {"_id": inserted_result.inserted_id}
-#         )
-#         return inserted_item
-#     except Exception as e:
-#         raise HTTPException(
-#             status_code=500, detail=f"Internal Server Error: {str(e)}")
 
 
 @router_property_image.post("/uploadfile/")
@@ -106,7 +98,11 @@ async def read_file(file_id: str):
         object_id = ObjectId(file_id)
         stream = await fs.open_download_stream(object_id)
         file_content = await stream.read()
-        return StreamingResponse(io.BytesIO(file_content), media_type="application/octet-stream", headers={"Content-Disposition": f"attachment; filename={file_id}"})
+        return StreamingResponse(
+            io.BytesIO(file_content),
+            media_type="application/octet-stream",
+            headers={"Content-Disposition": f"attachment; filename={file_id}"}
+        )
     except NoFile:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -117,6 +113,13 @@ async def read_file(file_id: str):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=str(e)
         )
+create_generic_routes(
+    router_property_image,
+    PropertyImage,
+    collection_property_image,
+    list_property_image,
+    serial_property_image
+)
 
 router = APIRouter()
 
