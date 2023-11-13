@@ -1,7 +1,11 @@
-
+import os
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorGridFSBucket
 
-uri = "mongodb+srv://admin:admin123@challenge-million-up.khx0rsj.mongodb.net/?retryWrites=true&w=majority" # noqa
+mongo_user = os.environ.get("MONGO_USER")
+mongo_password = os.environ.get("MONGO_PASSWORD")
+mongo_host = os.environ.get("MONGO_HOST")
+
+uri = f"mongodb+srv://{mongo_user}:{mongo_password}@{mongo_host}/?retryWrites=true&w=majority"
 
 client = AsyncIOMotorClient(uri)
 
