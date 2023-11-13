@@ -1,8 +1,8 @@
 def individual_Serial(todo) -> dict:
     return {
-        "id_property": todo['id_property'],
-        "file": todo['file'],
-        "enabled": todo['enabled']
+        "id_property": todo["id_property"],
+        "file": todo["file"],
+        "enabled": todo["enabled"],
     }
 
 

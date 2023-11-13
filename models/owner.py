@@ -1,9 +1,11 @@
-from pydantic import BaseModel
 from datetime import datetime
+from typing import Optional
+
+from pydantic import BaseModel
 
 
 class Owner(BaseModel):
-    name: str
-    address: str
-    photo: str
-    birthday: datetime
+    name: Optional[str]
+    address: Optional[str]
+    photo: Optional[str]
+    birthday: Optional[datetime]

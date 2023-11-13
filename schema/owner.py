@@ -1,10 +1,10 @@
 def individual_Serial(todo) -> dict:
     return {
-        "id": str(todo['_id']),
-        "name": todo['name'],
-        "address": todo['address'],
-        "photo": todo['photo'],
-        "birthday": todo['birthday']
+        "id": str(todo["_id"]),
+        "name": todo["name"],
+        "address": todo["address"],
+        "photo": todo["photo"],
+        "birthday": todo["birthday"],
     }
 
 
