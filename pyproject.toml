@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "million_ip_api"
+version = "0.1.0"
+description = ""
+authors = ["Daniel Cabrera <danielmtv6@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+fastapi = "^0.104.1"
+uvicorn = "^0.24.0.post1"
+motor = "^3.3.1"
+python-multipart = "^0.0.6"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
